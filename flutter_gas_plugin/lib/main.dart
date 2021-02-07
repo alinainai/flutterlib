@@ -1,4 +1,12 @@
+import 'dart:convert';
+import 'dart:ui';
+
 import 'package:flutter/material.dart';
+
+import 'insert_android_view_page.dart';
+import 'invoke_method_page.dart';
+import 'jump_activity_page.dart';
+import 'my_home_page.dart';
 
 void main() => runApp(MyApp());
 
@@ -9,102 +17,76 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Flutter Demo',
       theme: ThemeData(
-        // This is the theme of your application.
-        //
-        // Try running your application with "flutter run". You'll see the
-        // application has a blue toolbar. Then, without quitting the app, try
-        // changing the primarySwatch below to Colors.green and then invoke
-        // "hot reload" (press "r" in the console where you ran "flutter run",
-        // or press Run > Flutter Hot Reload in a Flutter IDE). Notice that the
-        // counter didn't reset back to zero; the application is not restarted.
         primarySwatch: Colors.blue,
       ),
-      home: MyHomePage(title: 'Flutter Demo Home Page'),
-    );
-  }
-}
-
-class MyHomePage extends StatefulWidget {
-  MyHomePage({Key key, this.title}) : super(key: key);
-
-  // This widget is the home page of your application. It is stateful, meaning
-  // that it has a State object (defined below) that contains fields that affect
-  // how it looks.
-
-  // This class is the configuration for the state. It holds the values (in this
-  // case the title) provided by the parent (in this case the App widget) and
-  // used by the build method of the State. Fields in a Widget subclass are
-  // always marked "final".
-
-  final String title;
-
-  @override
-  _MyHomePageState createState() => _MyHomePageState();
-}
-
-class _MyHomePageState extends State<MyHomePage> {
-  int _counter = 0;
-
-  void _incrementCounter() {
-    setState(() {
-      // This call to setState tells the Flutter framework that something has
-      // changed in this State, which causes it to rerun the build method below
-      // so that the display can reflect the updated values. If we changed
-      // _counter without calling setState(), then the build method would not be
-      // called again, and so nothing would appear to happen.
-      _counter++;
-    });
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    // This method is rerun every time setState is called, for instance as done
-    // by the _incrementCounter method above.
-    //
-    // The Flutter framework has been optimized to make rerunning build methods
-    // fast, so that you can just rebuild anything that needs updating rather
-    // than having to individually change instances of widgets.
-    return Scaffold(
-      appBar: AppBar(
-        // Here we take the value from the MyHomePage object that was created by
-        // the App.build method, and use it to set our appbar title.
-        title: Text(widget.title),
-      ),
-      body: Center(
-        // Center is a layout widget. It takes a single child and positions it
-        // in the middle of the parent.
-        child: Column(
-          // Column is also a layout widget. It takes a list of children and
-          // arranges them vertically. By default, it sizes itself to fit its
-          // children horizontally, and tries to be as tall as its parent.
-          //
-          // Invoke "debug painting" (press "p" in the console, choose the
-          // "Toggle Debug Paint" action from the Flutter Inspector in Android
-          // Studio, or the "Toggle Debug Paint" command in Visual Studio Code)
-          // to see the wireframe for each widget.
-          //
-          // Column has various properties to control how it sizes itself and
-          // how it positions its children. Here we use mainAxisAlignment to
-          // center the children vertically; the main axis here is the vertical
-          // axis because Columns are vertical (the cross axis would be
-          // horizontal).
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            Text(
-              'You have pushed the button this many times:',
-            ),
-            Text(
-              '$_counter',
-              style: Theme.of(context).textTheme.headline4,
-            ),
-          ],
+      //方式1
+      home: _getWidgetByRoute(window.defaultRouteName),
+      //方式2 如果route相同,优先匹配routes而不是home
+      routes: <String, WidgetBuilder>{
+        "page1": (context) => MyHomePage(
+          title: "匹配到了page1",
+          message: "通过routes变量",
         ),
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _incrementCounter,
-        tooltip: 'Increment',
-        child: Icon(Icons.add),
-      ), // This trailing comma makes auto-formatting nicer for build methods.
+        "page2": (context) => MyHomePage(
+          title: "匹配到了page2",
+          message: "通过routes变量",
+        ),
+        "page3": (context) => MyHomePage(
+          title: "匹配到了page3",
+          message: "通过routes变量",
+        ),
+        "page4": (context) => JumpActivityPage(),
+        "page5": (context) => InsertAndroidViewPage(),
+      },
+      //当通过routes和home的返回值都为null的话,才会从onUnknownRoute寻找
+      onUnknownRoute: (RouteSettings settings) {
+        return new PageRouteBuilder(pageBuilder: (BuildContext context, _, __) {
+          //这里为返回的Widget
+          return MyHomePage(
+            title: "没有匹配到",
+            message: "通过onUnknownRoute变量",
+          );
+        });
+      },
     );
+  }
+}
+
+//如果要接收平台层发送的参数,除了使用Channel以外(这种方式不是正常的方式,强烈不推荐),就只能通过window.defaultRouteName了,
+//因为routes的route只能提前定义好,无法动态判断
+Widget _getWidgetByRoute(String jsonStr) {
+  print("json=$jsonStr");
+  String _route;
+  Map<String, dynamic> jsonMap;
+  try {
+    jsonMap = json.decode(jsonStr);
+    _route = jsonMap["path"];
+  } catch (e) {
+    print(e);
+    _route = jsonStr;
+  }
+  switch (_route) {
+  //接收到了匹配的规则，跳转到flutter指定页面
+    case 'page1':
+      return MyHomePage(
+        title: "匹配到了page1",
+        message: "通过home变量",
+      );
+    case 'page1Param':
+      return MyHomePage(
+        title: "匹配到了page1Param",
+        message: jsonMap["param"],
+      );
+    case "InvokeMethodPage":
+      return InvokeMethodPage(
+        title: jsonMap["title"],
+        channelName: jsonMap["channelName"],
+        androidMethod: jsonMap["androidMethod"],
+      );
+    default:
+      return MyHomePage(
+        title: "没有匹配到",
+        message: "通过home变量",
+      );
   }
 }
