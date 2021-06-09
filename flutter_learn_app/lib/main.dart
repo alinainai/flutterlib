@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import 'customwidget.dart';
+import 'customview/customwidget.dart';
 import 'newroute.dart';
 
 void main() {
