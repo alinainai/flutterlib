@@ -1,15 +1,37 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:flutter_learn_app/common/global.dart';
 
 class BaseWight extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
+
+    String msg = ModalRoute.of(context).settings.arguments as String;
+
     return Scaffold(
         appBar: AppBar(
-          title: Text("提示页面"),
+          title: Text("提示页面 $msg"),
         ),
         body: Column(
           children: [
+            Text.rich(
+              TextSpan(children: <TextSpan>[
+                TextSpan(
+                    text: '文本是视图系统中常见的控件，它用来显示一段特定样式的字符串，类似',
+                    style: TextStyleMs.red_00_14),
+                // 第 1 个片段，红色样式
+                TextSpan(text: 'Android', style: TextStyleMs.black_00_14),
+                // 第 1 个片段，黑色样式
+                TextSpan(text: '中的', style: TextStyleMs.red_00_14),
+                // 第 1 个片段，红色样式
+                TextSpan(text: 'TextView', style: TextStyleMs.black_00_14)
+                // 第 1 个片段，黑色样式
+              ]),
+              textAlign: TextAlign.center,
+            ),
+            FlatButton(onPressed: ()=>Navigator.pop(context,"返回的数据"), child: Image.asset("assets/images/beautiful_girl.jpeg",
+                width: 100, height: 100))
+            ,
             //单一child的wight Container、Padding、Center
             Container(
               child: Text(

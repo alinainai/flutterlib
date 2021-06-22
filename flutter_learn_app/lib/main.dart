@@ -1,6 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_learn_app/src/advanced/animal_learn.dart';
+import 'package:flutter_learn_app/src/advanced/http_learn_wight.dart';
 import 'package:flutter_learn_app/src/learn/compose_widget.dart';
 import 'package:flutter_learn_app/src/learn/base_wight.dart';
+import 'package:flutter_learn_app/src/learn/custom_widget.dart';
+import 'package:flutter_learn_app/src/learn/gesture_widget.dart';
+import 'package:flutter_learn_app/src/learn/list_widget.dart';
+import 'package:flutter_learn_app/src/learn/share_data_widget.dart';
 import 'package:flutter_learn_app/src/learn/slider_wight.dart';
 import 'package:flutter_learn_app/src/newroute/newroute.dart';
 import 'package:flutter_learn_app/src/wight/customwidget.dart';
@@ -29,6 +35,12 @@ class MyApp extends StatelessWidget {
             NewRoute(text: ModalRoute.of(context).settings.arguments),
         Global.ROUTER_PARENT_WIGHT: (context) => BaseWight(),
         Global.ROUTER_COMPOS_WIDGET: (context) => ComposeWidget(),
+        Global.ROUTER_GESTURE_WIGHT: (context) => GestureWight(),
+        Global.ROUTER_LIST_WIDGET: (context) => ListWidget(),
+        Global.ROUTER_ANIMAL_WIDGET: (context) => AnimationLearnWidget(),
+        Global.ROUTER_HTTP_LEARN: (context) => HttpLearnWidget(),
+        Global.ROUTER_CUSTOM_WIDGET: (context) => CustomWidget(),
+        Global.ROUTER_SHARE_DATA: (context) => ShowShareDataWidget(),
       },
       home: MyHomePage(title: 'Flutter Demo Home Page'),
     );
@@ -48,10 +60,6 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
   int _counter = 0;
-  final TextStyle _blackStyle = TextStyle(
-      fontWeight: FontWeight.normal, fontSize: 20, color: Colors.black); // 黑色样式
-  final TextStyle _redStyle = TextStyle(
-      fontWeight: FontWeight.bold, fontSize: 20, color: Colors.red); // 红色样式
 
   @override
   Widget build(BuildContext context) {
@@ -64,27 +72,11 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
         mainAxisAlignment: MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
-          Text.rich(
-            TextSpan(children: <TextSpan>[
-              TextSpan(
-                  text: '文本是视图系统中常见的控件，它用来显示一段特定样式的字符串，类似', style: _redStyle),
-              // 第 1 个片段，红色样式
-              TextSpan(text: 'Android', style: _blackStyle),
-              // 第 1 个片段，黑色样式
-              TextSpan(text: '中的', style: _redStyle),
-              // 第 1 个片段，红色样式
-              TextSpan(text: 'TextView', style: _blackStyle)
-              // 第 1 个片段，黑色样式
-            ]),
-            textAlign: TextAlign.center,
-          ),
-          RandomWordsWidget(),
+          // RandomWordsWidget(),
           Text(
             '$_counter',
             style: Theme.of(context).textTheme.headline4,
           ),
-          Image.asset("assets/images/beautiful_girl.jpeg",
-              width: 100, height: 100),
           FlatButton(
             child: Text("open new route"),
             textColor: Colors.blue,
@@ -107,8 +99,10 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
                   borderRadius: BorderRadius.circular(20.0)),
               // 确保文字按钮为深色
               colorBrightness: Brightness.light,
-              onPressed: () =>
-                  {Navigator.pushNamed(context, Global.ROUTER_PARENT_WIGHT)},
+              onPressed: () => Navigator.pushNamed(
+                      context, Global.ROUTER_PARENT_WIGHT,
+                      arguments: "Hey")
+                  .then((msg) => print("from b page data = $msg")),
               // onPressed: () => {Navigator.pushNamed(context, Global.ROUTER_PARENT_WIGHT)},
               child: Row(
                 children: <Widget>[Icon(Icons.add), Text("跳转到基础wight界面")],
@@ -126,8 +120,98 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
               // onPressed: () => {Navigator.pushNamed(context, Global.ROUTER_PARENT_WIGHT)},
               child: Row(
                 mainAxisSize: MainAxisSize.min,
-                children: <Widget>[Icon(Icons.add), Text("跳转到基础wight界面")],
-              ))
+                children: <Widget>[Icon(Icons.add), Text("layout界面")],
+              )),
+          FlatButton(
+              // 设置背景色为黄色
+              color: Colors.green,
+              // 设置斜角矩形边框
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(20.0)),
+              // 确保文字按钮为深色
+              colorBrightness: Brightness.light,
+              onPressed: () =>
+                  {Navigator.pushNamed(context, Global.ROUTER_GESTURE_WIGHT)},
+              // onPressed: () => {Navigator.pushNamed(context, Global.ROUTER_PARENT_WIGHT)},
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: <Widget>[Icon(Icons.add), Text("监听事件界面")],
+              )),
+          FlatButton(
+              // 设置背景色为黄色
+              color: Colors.green,
+              // 设置斜角矩形边框
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(20.0)),
+              // 确保文字按钮为深色
+              colorBrightness: Brightness.light,
+              onPressed: () =>
+                  {Navigator.pushNamed(context, Global.ROUTER_LIST_WIDGET)},
+              // onPressed: () => {Navigator.pushNamed(context, Global.ROUTER_PARENT_WIGHT)},
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: <Widget>[Icon(Icons.add), Text("listView的使用")],
+              )),
+          FlatButton(
+              // 设置背景色为黄色
+              color: Colors.green,
+              // 设置斜角矩形边框
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(20.0)),
+              // 确保文字按钮为深色
+              colorBrightness: Brightness.light,
+              onPressed: () =>
+                  {Navigator.pushNamed(context, Global.ROUTER_ANIMAL_WIDGET)},
+              // onPressed: () => {Navigator.pushNamed(context, Global.ROUTER_PARENT_WIGHT)},
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: <Widget>[Icon(Icons.add), Text("动画")],
+              )),
+          FlatButton(
+              // 设置背景色为黄色
+              color: Colors.green,
+              // 设置斜角矩形边框
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(20.0)),
+              // 确保文字按钮为深色
+              colorBrightness: Brightness.light,
+              onPressed: () =>
+                  {Navigator.pushNamed(context, Global.ROUTER_HTTP_LEARN)},
+              // onPressed: () => {Navigator.pushNamed(context, Global.ROUTER_PARENT_WIGHT)},
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: <Widget>[Icon(Icons.add), Text("http 请求")],
+              )),
+          FlatButton(
+              // 设置背景色为黄色
+              color: Colors.green,
+              // 设置斜角矩形边框
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(20.0)),
+              // 确保文字按钮为深色
+              colorBrightness: Brightness.light,
+              onPressed: () =>
+                  {Navigator.pushNamed(context, Global.ROUTER_CUSTOM_WIDGET)},
+              // onPressed: () => {Navigator.pushNamed(context, Global.ROUTER_PARENT_WIGHT)},
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: <Widget>[Icon(Icons.add), Text("自定义widget")],
+              )),
+          FlatButton(
+              // 设置背景色为黄色
+              color: Colors.green,
+              // 设置斜角矩形边框
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(20.0)),
+              // 确保文字按钮为深色
+              colorBrightness: Brightness.light,
+              onPressed: () =>
+                  {Navigator.pushNamed(context, Global.ROUTER_SHARE_DATA)},
+              // onPressed: () => {Navigator.pushNamed(context, Global.ROUTER_PARENT_WIGHT)},
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: <Widget>[Icon(Icons.add), Text("数据共享")],
+              )),
         ],
       ),
 
